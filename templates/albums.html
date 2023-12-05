@@ -1,0 +1,11 @@
+<html>
+    <head><title>Album List</title></head>
+    <body>
+        <h1>Albums</h1>
+        {% for album in albums_list %}
+            <div><a href="/albums/{{ album.id }}">{{ album.title }}</a> 
+<br>Released: {{ album.release_year }}</div>
+            <br>
+        {% endfor %}
+    </body>
+</html>

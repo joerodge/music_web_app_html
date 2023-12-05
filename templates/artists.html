@@ -1,0 +1,9 @@
+<html>
+    <head></head>
+    <body>
+        {% for artist in artists %}
+        <h1><a href="/artists/{{ artist.id }}">{{ artist.name }}</a></h1>
+        <p>Genre: {{ artist.genre }}</p>
+        {% endfor %}
+    </body>
+</html>
