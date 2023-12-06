@@ -73,3 +73,55 @@ def test_get_single_artist(page, test_web_address, db_connection):
     p_tag = page.locator('p')
     expect(h1_tag).to_have_text('ABBA')
     expect(p_tag).to_have_text('Genre: Pop')
+
+
+def test_create_new_album(page, test_web_address, db_connection):
+    page.set_default_timeout(2000)
+    db_connection.seed('seeds/music.sql')
+    page.goto(f"http://{test_web_address}/albums")
+    page.click("text='Create a new album'")
+    page.fill("input[name=title]", "Test Album")
+    page.fill("input[name=release_year]", "1999")
+    page.fill("input[name=artist_id]", "3")
+    page.click("text='Add album'")
+    h1_tag = page.locator('h1')
+    p_tags = page.locator('p')
+    expect(h1_tag).to_have_text('Test Album')
+    expect(p_tags).to_have_text([
+        'Release year: 1999',
+        'Artist: Taylor Swift'
+    ])
+
+
+def test_create_album_when_input_fields_are_incorrect(page, test_web_address, db_connection):
+    page.set_default_timeout(2000)
+    db_connection.seed('seeds/music.sql')
+    page.goto(f"http://{test_web_address}/albums")
+    page.click("text='Create a new album'")
+    page.click("text='Add album'")
+    errors_tag = page.locator(".t-errors")
+    expect(errors_tag).to_have_text("Error: One or more field was empty")
+
+
+def test_add_new_artist(page, test_web_address, db_connection):
+    page.set_default_timeout(2000)
+    db_connection.seed('seeds/music.sql')
+    page.goto(f"http://{test_web_address}/artists")
+    page.click("text='Create a new artist'")
+    page.fill("input[name=artist_name]", "Test Artist")
+    page.fill("input[name=genre]", "test genre")
+    page.click("text='Add artist'")
+    h1_tag = page.locator('h1')
+    p_tag = page.locator('p')
+    expect(h1_tag).to_have_text('Test Artist')
+    expect(p_tag).to_have_text('Genre: test genre')
+
+def test_add_new_artist_with_blank_fields(page, test_web_address, db_connection):
+    page.set_default_timeout(2000)
+    db_connection.seed('seeds/music.sql')
+    page.goto(f"http://{test_web_address}/artists")
+    page.click("text='Create a new artist'")
+    # Don't fill in text and click submit while they are empty
+    page.click("text='Add artist'")
+    errors_tag = page.locator(".t-errors")
+    expect(errors_tag).to_have_text("Error: One or more field was empty")

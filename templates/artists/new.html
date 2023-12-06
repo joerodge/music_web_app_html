@@ -1,0 +1,25 @@
+<html>
+    <head><title>Add New Album</title></head>
+    <body>
+        {% if error %}
+        <p class="t-errors">
+            {{ error }}
+        </p>
+        {% endif %}
+        <h1>Create New Artist</h1>
+        <form action="/artists" method="POST">
+        <p>
+            <label for="artist_name">Artist Name</label><br>
+            <input type="text" name="artist_name" id="artist_name">
+        </p>
+        <p>
+            <label for="genre">Genre</label><br>
+            <input type="text" name="genre" id="genre">
+        </p>
+        <p>
+            <input type="submit" value="Add artist">
+        </p>
+        </form>
+        <a href="/artists">--Go back to artists--</a>
+    </body>
+</html>

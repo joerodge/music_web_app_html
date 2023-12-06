@@ -25,9 +25,9 @@ class ArtistRepository:
     # Create a new artist
     # Do you want to get its id back? Look into RETURNING id;
     def create(self, artist):
-        self._connection.execute('INSERT INTO artists (name, genre) VALUES (%s, %s)', [
+        rows = self._connection.execute('INSERT INTO artists (name, genre) VALUES (%s, %s) RETURNING id', [
                                 artist.name, artist.genre])
-        return None
+        return rows[0]['id']
 
     # Delete an artist by their id
     def delete(self, artist_id):

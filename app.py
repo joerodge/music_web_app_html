@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template
+from flask import Flask, request, redirect, render_template
 from lib.database_connection import get_flask_database_connection
 from lib.album_repository import AlbumRepository
 from lib.album import Album
@@ -31,7 +31,7 @@ def get_albums():
     connection = get_flask_database_connection(app)
     album_repo = AlbumRepository(connection)
     albums = album_repo.all()
-    return render_template('albums.html', albums_list=albums)
+    return render_template('albums/albums.html', albums_list=albums)
 
 @app.route('/albums/<id>')
 def get_1_album(id):
@@ -40,14 +40,14 @@ def get_1_album(id):
     album = album_repo.find(id)
     artist_repo = ArtistRepository(connection)
     artist = artist_repo.find(album.artist_id)
-    return render_template('album_single.html', album=album, artist=artist)
+    return render_template('albums/album_single.html', album=album, artist=artist)
 
 @app.route('/artists', methods=['GET'])
 def get_artists():
     connection = get_flask_database_connection(app)
     artist_repo = ArtistRepository(connection)
     artists = artist_repo.all()
-    return render_template('artists.html', artists=artists)
+    return render_template('artists/artists.html', artists=artists)
 
 
 @app.route('/artists/<id>')
@@ -55,8 +55,42 @@ def get_1_artist(id):
     connection = get_flask_database_connection(app)
     artist_repo = ArtistRepository(connection)
     artist = artist_repo.find(id)
-    return render_template('artist_single.html', artist=artist)
+    return render_template('artists/artist_single.html', artist=artist)
 
+@app.route('/albums/new', methods=['GET'])
+def new_album():
+    return render_template('albums/new.html')
+
+
+@app.route('/albums', methods=['POST'])
+def create_new_album():
+    connection = get_flask_database_connection(app)
+    album_repo = AlbumRepository(connection)
+    title = request.form['title']
+    release_year = request.form['release_year']
+    artist_id = request.form['artist_id']
+    if not title or not release_year or not artist_id:
+        return render_template('albums/new.html', error="Error: One or more field was empty")
+    
+    id = album_repo.create(title, release_year, artist_id)
+    return redirect(f'/albums/{id}')
+
+@app.route('/artists/new', methods=['GET'])
+def new_artist():
+    return render_template('artists/new.html')
+
+@app.route('/artists', methods=['POST'])
+def create_new_artist():
+    connection = get_flask_database_connection(app)
+    artist_repo = ArtistRepository(connection)
+    artist_name = request.form['artist_name']
+    genre = request.form['genre']
+    if not artist_name or not genre:
+        return render_template('artists/new.html', error="Error: One or more field was empty")
+    
+    artist = Artist(None, artist_name, genre)
+    id = artist_repo.create(artist)
+    return redirect(f"/artists/{id}")
 
 # This imports some more example routes for you to see how they work
 # You can delete these lines if you don't need them.
